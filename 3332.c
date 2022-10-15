@@ -4,22 +4,23 @@
 #include <math.h>
 int main ()
 {
-    double x = 0, h, i, f1, f2;
+    double x = 0, h, f, i, n;
     printf ("Enter h (step) -> ");
     scanf ("%lf", &h);
     printf("\nx             f(x)\n- - - - - - - - - - - -\n");
-    for (i = 0; i <= 0.5; i += h)
+    n = 0.5 / h;
+    for (i = 0; i <= n; i++)
     {
-        if (x <= 0.25)
+        if (i <= (n / 2))
         {
-            f1 = exp(sin(x));
-            printf("%lf      %lf\n", x, f1);
+            f = exp(sin(x));
+            printf("%lf      %lf\n", x, f);
             x += h;
         }
         else
         {
-            f2 = exp(x) - 1/(sqrt(x));
-            printf("%lf      %lf\n", x, f2);
+            f = exp(x) - 1/(sqrt(x));
+            printf("%lf      %lf\n", x, f);
             x += h;
         }
     }

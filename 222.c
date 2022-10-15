@@ -4,12 +4,14 @@
 int main()
 {
     double x, y, z;
-    printf("RAV:\n ( -0.45, -0.35) + 2*Pi*n, n e Z;\n ( 0.25, 0.55) + 2*Pi*n, n e Z;\n ( 2.65, 2.95) + 2*Pi*n, n e Z;\n ( 3.45, 3.55) + 2*Pi*n, n e Z;\nEnter x -> ");
+    printf("Enter x {0.25 <= x <= 0.52} -> ");
     scanf("%lf", &x);
-    y = acos(2*sin(x));
-    if ((cos(y * y) >= 0) && (sin(x) >= -0.5 && sin(x) <= 0.5))
-        {z = sqrt(cos(y * y));
-        printf("y(x) = %lf\nz(y) = %lf\n", y, z);}
+    if (x >= 0.25 && x <= 0.52)
+        {
+        y = acos(2*sin(x));
+        z = sqrt(cos(y * y));
+        printf("y(x) = %lf\nz(y) = %lf\n", y, z);
+        }
     else
         printf("Value is incorrect!\n");
     return 0;
