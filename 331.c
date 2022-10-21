@@ -11,20 +11,13 @@ int main ()
     i = 0.5 / h;
     do
     {
-        if ( n < (i / 2))
-        {
+        if ( n <= (i / 2))
             f = exp(sin(x));
-            printf("%lf      %lf\n", x, f);
-            x += h;
-            n++;
-        }
         else
-        {
             f = exp(x) - 1/(sqrt(x));
-            printf("%lf      %lf\n", x, f);
-            x += h;
-            n++;
-        }
-    } while (n < i);
+        printf("%lf      %lf\n", x, f);
+        x += h;
+        n++;
+    } while (n <= i);
     return 0;
 }

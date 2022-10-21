@@ -13,38 +13,86 @@ int main ()
     n = 2;
     do
     {   
-    for (i = 0; i <= 3; i++)
-    {
-        xi = (i * (n / 2) * h);
-        if (xi <= 0.25)
+        for (i = 0; i <= 3; i++)
         {
-            f += exp(sin(xi + ((n / 2) * h)/2));
+            xi = (i * (n / 2) * h);
+            if (xi <= 0.25)
+            {
+                f += exp(sin(xi + ((n / 2) * h)/2));
+                f1 += exp(sin((xi * 2) + (n * h)/2));
+            }
+            else
+            {
+                f += exp(xi + ((n / 2) * h)/2) - 1/(sqrt(xi + ((n / 2) * h)/2));
+                f1 += exp((xi * 2) + (n * h)/2) - 1/(sqrt((xi * 2) + (n * h)/2));
+            }
         }
-        else
-        {
-            f += exp(xi + ((n / 2) * h)/2) - 1/(sqrt(xi + ((n / 2) * h)/2));
-        }
-    }
-    f *= ((n / 2) * h);
-    for (i = 0; i <= 3; i++)
-    {
-        xi = (i * n * h);
-        if (xi <= 0.25)
-        {
-            f1 += exp(sin(xi + (n * h)/2));
-        }
-        else
-        {
-            f1 += exp(xi + (n * h)/2) - 1/(sqrt(xi + (n * h)/2));
-        }
-    }
-    f1 *= (n * h);
-    n *= 2;
-    rynge = (f1 - f)/3;
+        f *= ((n / 2) * h);
+        f1 *= (n * h);
+        rynge = (f1 - f)/3;        
+        n *= 2;
     } while (rynge < e);
-    printf("%lf\n", rynge);
+    printf("%lf\n%lf\n%lf\n", rynge, f, f1);
     return 0;
 }
+
+      //  f *= ((n / 2) * h);
+        //f1 *= (n * h);
+
+        //f *= (i * h);
+        //f1 *= (h * (i / 2));
+         //   rynge = (f1 - f)/3;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
