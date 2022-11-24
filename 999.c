@@ -1,8 +1,10 @@
 #include <stdio.h>
-
+#include <string.h>
 int main()
 {
-    char str[] = "finish with my woman 'cause she coudnt help me with my mind";
+    char str[256];
+    printf("Строка: ");
+    fgets(str, 256, stdin);
     char *bukva, *bukva2, *p;
     bukva = str;
     while( *bukva )
@@ -17,5 +19,5 @@ int main()
             putchar( *p-- );
         bukva = bukva2;
     }
-    printf("\n");
+//    printf("\n");
 }
