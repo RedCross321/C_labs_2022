@@ -2,16 +2,21 @@
 #include <stdlib.h>
 #include <time.h>
 
-void fill(int n, int A[])
+int fill(int n, int A[], int k)
 {
-    int i, k;
-    for (i = 0; i < n; i++)
+    for (int i = 0; i < n; i++)
+    {
         A[i] = rand () % 101 - 50;
+        if (A[i] >= 0)
+            k++;
+    }
+    return k;    
 }
-void raskid(int n, int P[], int N[], int A[])
+int raskid(int n, int A[], int k)
 {
-    int i, x = 0, y = 0;
-    for (i = 0; i < n; i++)
+    int x = 0, y = 0;
+    int P[k], N[n - k];
+    for (int i = 0; i < n; i++)
     {
         if (A[i] >= 0)
         {
@@ -25,24 +30,24 @@ void raskid(int n, int P[], int N[], int A[])
         }
     }
     printf("\nПоложительный массив: ");
-    for (i = 0; i < x; i++)
+    for (int i = 0; i < x; i++)
         printf("%d  ", P[i]);
     printf("\nОтрицательный массив: ");
-    for (i = 0; i < y; i++)
+    for (int i = 0; i < y; i++)
         printf("%d  ", N[i]); 
 }
 int main()
 {
     srand(time(NULL));
-    int n;
+    int n, k = 0;
     printf("n -> ");
     scanf("%d", &n);
-    int A[n], i, N[n], P[n];
-    fill(n, A);
+    int A[n];
+    k = fill(n, A, k);
     printf("Основной массив: ");
-    for (i = 0; i < n; i++)
+    for (int i = 0; i < n; i++)
         printf("%d  ", A[i]);
-    raskid(n, P, N, A);
+    raskid(n, A, k);
     printf("\n");
     return 0;
 }

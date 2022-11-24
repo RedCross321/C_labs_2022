@@ -4,10 +4,9 @@
 
 void fill(int n, int m, int A[n][m])
 {
-    int i, k;
-    for (i = 0; i < m; i++)
+    for (int i = 0; i < m; i++)
     {
-        for (k = 0; k < n; k++)
+        for (int k = 0; k < n; k++)
             A[i][k] = rand () % 101 - 50;
     }
 }
@@ -33,20 +32,20 @@ int minmax(int n, int m, int A[n][m])
 int main()
 {
     srand(time(NULL));
-    int n, m, i, k, x, result;
-    printf("Количество столбцов -> ");
-    scanf("%d", &n);
+    int n, m, result;
     printf("Количество строк -> ");
     scanf("%d", &m);
+    printf("Количество столбцов -> ");
+    scanf("%d", &n);
     int A[n][m];
     fill(n, m, A);
-    for (i = 0; i < m; i++)
+    for (int i = 0; i < m; i++)
     {
-        for (k = 0; k < n; k++)
+        for (int k = 0; k < n; k++)
             printf("%4d ", A[i][k]); 
         printf("\n");   
     }
-    result = minmax(n, m, A);
-    printf ("Минимум среди максимумов столбцов:%4i\n", result);
+    //result = minmax(n, m, A);
+    //printf ("Минимум среди максимумов столбцов:%4i\n", result);
     return 0;
 }
