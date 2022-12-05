@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <stdio_ext.h>
 #include <ctype.h>
+#include <conio.h>
 
 int mygetch()
 {
@@ -21,16 +22,21 @@ int main()
 {
     int proverka1 = 0, proverka2 = 0;;
     char Kod1, Kod2;
-    int sim = 0;
+    int sim = 0, dep = 0;
     unsigned c = 0;
     while (1)
     {
         char ch = mygetch();
         if (isprint(ch) && proverka1 == 0)
         {
-            printf("%c", ch);
+//            printf("%c", ch);
+            clreol();
             c++;
             sim += ch;
+            dep = sim;
+            sim /= c;
+            printf ("\n%c -%4d Среднее значение\n", sim, sim);
+            sim = dep;
         }
         else
         {
@@ -55,6 +61,4 @@ int main()
             }
         }
     }
-    sim /= c;
-    printf ("\n%c -%4d Среднее значение\n", sim, sim);
 }
