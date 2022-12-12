@@ -167,11 +167,15 @@ int podvert(int m)
         switch (answer)
         {
         case '4':
+            if (m > 6)
+                printf("\r\x1B[0;30;42mВыйти в меню\x1b[0m");
             if ((m - 1) >= 0 && m < 5)
                 m--;
             danet(m);
             break;
         case '6':
+            if (m > 6)
+                printf("\r\x1B[0;30;42mВыйти в меню\x1b[0m");
             if (2 > (m + 1))
                 m++;
             danet(m);
@@ -193,6 +197,8 @@ int podvert(int m)
             break;
         default:
             danet(m);
+            if (m > 6)
+                printf("\r\x1B[0;30;42mВыйти в меню\x1b[0m");
             break;
         }
         __fpurge(stdin);
@@ -258,7 +264,7 @@ int fast(int m, int g)
 /************************************************Управление менюшкой************************************************************/
 int prok = 0;
 
-int opred(int n)
+void opred(int n)
 {
     char file[] = "film.txt";
     if (n == 6)
@@ -325,7 +331,7 @@ int opred(int n)
 
 /************************************************Вывод списка на экран**********************************************************/
 
-int print_film(struct film new)
+void print_film(struct film new)
 {
     printf("\x1B[0;32;40m%-30s|%-20s|%-30s|%-30s|%4d\x1b[0m", new.name, new.country, new.rez, new.gg, new.year);
 }
@@ -384,7 +390,7 @@ void write_file(struct film* db, int nomer1, const char* filename)
     fprintf(file, "%d\n", nomer1);
     for (int i = 0; i < nomer1; i++)
     {
-        fprintf(file, "%s %s %s %s %d\n", db[i].name, db[i].country, db[i].rez, db[i].gg, db[i].year);
+        fprintf(file, "%s\n%s\n%s\n%s\n%d\n", db[i].name, db[i].country, db[i].rez, db[i].gg, db[i].year);
     }
     fclose(file);
     system("clear");
@@ -410,13 +416,23 @@ int read_file(struct film** db, int nomer1, const char* filename)
     for (int i = 0; i < nomer1; i++)
     {
         struct film* s = &(*db)[i];
-        
+
+        char* trash = malloc(5);    
         char* name = malloc(200);
         char* country = malloc(200);
         char* rez = malloc(200);
         char* gg = malloc(200);
-        fscanf(file, "%s %s %s %s %d", name, country, rez, gg, &s->year);
-        
+
+        fgets(trash, 5, file);
+        fgets(name, 200, file);
+        name[strlen(name)-1] = 0;
+        fgets(country, 200, file);
+        country[strlen(country)-1] = 0;
+        fgets(rez, 200, file);
+        rez[strlen(rez)-1] = 0;
+        fgets(gg, 200, file);
+        gg[strlen(gg)-1] = 0;
+        fscanf(file, "%d", &s->year);
         s->name = name;
         s->country = country;
         s->rez = rez;
@@ -464,7 +480,7 @@ void start()
     fast(0, 10);
 }
 
-int color(int n)
+void color(int n)
 {
     system("clear");
     if (n == 0)
@@ -523,21 +539,15 @@ int color(int n)
     }
 }
 
-int danet1(int m)
+void danet1(int m)
 {
     if (m == 0)
-    {
-        printf("\r\x1B[0;32;40m                   \x1b[0m\x1B[0;30;42mДА\x1b[0m\x1B[0;32;40m");
-        printf("         \x1b[0m\x1B[0;32;40mНЕТ\x1b[0m");
-    }
+        printf("\r\x1B[0;32;40m                   \x1b[0m\x1B[0;30;42mДА\x1b[0m\x1B[0;32;40m         \x1b[0m\x1B[0;32;40mНЕТ\x1b[0m");
     if (m == 1)
-    {
-        printf("\r\x1B[0;32;40m                   ДА");
-        printf("         \x1b[0m\x1B[0;30;42mНЕТ\x1b[0m");
-    }
+        printf("\r\x1B[0;32;40m                   ДА         \x1b[0m\x1B[0;30;42mНЕТ\x1b[0m");
 }
 
-int danet(int m)
+void danet(int m)
 {
     if (m == 0)
     {
