@@ -1,19 +1,84 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <vector>
 #include <cstdlib>
 
+using namespace std;
+
 class Film {
-public:
-    std::string name;
-    std::string country;
-    std::string director;
-    std::string actor;
+private:
+    string name;
+    string country;
+    string director;
+    string actor;
     int year;
+public:
+    Film() : name(""), country(""), director(""), actor(""), year(0) {}
+
+    Film(const Film& other) 
+        : name(other.name), country(other.country),
+          director(other.director), actor(other.actor),
+          year(other.year) {}
+
+    Film(const Film& original, const string& newDirector) 
+        : name(original.name + " (Director's Cut)"),
+          country(original.country), director(newDirector),
+          actor(original.actor), year(original.year) {}
+
+    string getName() const { return name; }
+    string getCountry() const { return country; }
+    string getDirector() const { return director; }
+    string getActor() const { return actor; }
+    int getYear() const { return year; }
+
+    void setName(const string& n) { name = n; }
+    void setCountry(const string& c) { country = c; }
+    void setDirector(const string& d) { director = d; }
+    void setActor(const string& a) { actor = a; }
+    void setYear(int y) { year = y; }
+
+    Film operator+(const Film& other) const {
+        Film result;
+        result.name = this->name + " & " + other.name;
+        result.country = this->country + "/" + other.country;
+        result.director = this->director + " & " + other.director;
+        result.actor = this->actor + " & " + other.actor;
+        result.year = max(this->year, other.year) + 1;
+        return result;
+    }
+
+    Film operator*(int count) const {
+        Film result;
+        result.name = this->name + " x" + to_string(count);
+        result.country = this->country;
+        result.director = this->director;
+        result.actor = this->actor;
+        result.year = this->year + (2 * count);
+        return result;
+    }
+
+    Film& operator++() {
+        ++year;
+        return *this;
+    }
+
+    Film operator++(int) {
+        Film temp = *this;
+        temp.name += " 2";
+        temp.year++;
+        return temp;
+    }
+
+    bool operator==(const Film& other) const {
+        return (year == other.year) && (name == other.name);
+    }
+
+    bool operator!=(const Film& other) const {
+        return !(*this == other);
+    }
 
     void print() const {
-        std::cout << "\x1B[0;32;40m" 
+        cout << "\x1B[0;32;40m" 
                   << name << " | " 
                   << country << " | "
                   << director << " | "
@@ -23,44 +88,75 @@ public:
     }
 
     static void clear() {
-        std::system("clear");
+        system("clear");
     }
 };
 
 class FilmDatabase {
 private:
-    std::vector<Film> films;
+    Film* films;
+    size_t size;
+    size_t capacity;
+
+    void resize(size_t newCapacity) {
+        Film* newFilms = new Film[newCapacity];
+        for (size_t i = 0; i < size; ++i) {
+            newFilms[i] = films[i];
+        }
+        delete[] films;
+        films = newFilms;
+        capacity = newCapacity;
+    }
 
 public:
+    FilmDatabase() : films(new Film[10]), size(0), capacity(10) {}
+    
+    ~FilmDatabase() {
+        delete[] films;
+    }
+
     void addFilm() {
         Film film;
-        std::string temp;
+        string temp;
 
         Film::clear();
-        std::cout << "\x1B[5;32mВведите название: \x1b[0m";
-        std::getline(std::cin, film.name);
+        cout << "\x1B[5;32mName: \x1b[0m";
+        string name;
+        getline(cin, name);
+        film.setName(name);
 
-        std::cout << "\x1B[5;32mВведите страну: \x1b[0m";
-        std::getline(std::cin, film.country);
+        cout << "\x1B[5;32mCountry: \x1b[0m";
+        string country;
+        getline(cin, country);
+        film.setCountry(country);
 
-        std::cout << "\x1B[5;32mВведите режиссера: \x1b[0m";
-        std::getline(std::cin, film.director);
+        cout << "\x1B[5;32mProducer: \x1b[0m";
+        string director;
+        getline(cin, director);
+        film.setDirector(director);
 
-        std::cout << "\x1B[5;32mВведите главного актера: \x1b[0m";
-        std::getline(std::cin, film.actor);
+        cout << "\x1B[5;32mMain actor: \x1b[0m";
+        string actor;
+        getline(cin, actor);
+        film.setActor(actor);
 
-        std::cout << "\x1B[5;32mВведите год: \x1b[0m";
-        std::cin >> film.year;
-        std::cin.ignore();  
+        cout << "\x1B[5;32mYear: \x1b[0m";
+        int year;
+        cin >> year;
+        film.setYear(year);
+        cin.ignore();
 
-        films.push_back(film);
+        if (size >= capacity) {
+            resize(capacity * 2);
+        }
+        films[size++] = film;
 
         Film::clear();
-        std::cout << "\x1B[5;32mФильм внесен в список\x1b[0m\n";
-        std::cout << "\x1B[5;32mХотите добавить ещё один? (y/n): \x1b[0m";
+        cout << "\x1B[5;32mFilm was add\x1b[0m\n";
+        cout << "\x1B[5;32mWant to add more? (y/n): \x1b[0m";
         char answer;
-        std::cin >> answer;
-        std::cin.ignore();  
+        cin >> answer;
+        cin.ignore();
         if (answer == 'y' || answer == 'Y') {
             addFilm();
         }
@@ -69,44 +165,47 @@ public:
     void deleteFilm() {
         Film::clear();
         int index;
-        std::cout << "\x1B[0;32mВведите номер фильма для удаления: \x1b[0m";
-        std::cin >> index;
-        std::cin.ignore();  
+        cout << "\x1B[0;32mEnter a number of film what you want delete: \x1b[0m";
+        cin >> index;
+        cin.ignore();
 
-        if (index <= 0 || index > films.size()) {
+        if (index <= 0 || index > size) {
             Film::clear();
-            std::cout << "\x1B[0;32mНет фильма с таким номером\x1b[0m\n";
+            cout << "\x1B[0;32mFilm with this number don't exists\x1b[0m\n";
         } else {
-            films.erase(films.begin() + index - 1);
+            for (size_t i = index - 1; i < size - 1; ++i) {
+                films[i] = films[i + 1];
+            }
+            --size;
             Film::clear();
-            std::cout << "\x1B[0;32mФильм успешно удален\x1b[0m\n";
+            cout << "\x1B[0;32mFilm was succesfully delete\x1b[0m\n";
         }
     }
 
     void printFilms() const {
         Film::clear();
-        std::cout << "\x1B[0;32;40m  № | Название                     | Страна             | Режиссер                    | Главный актер                |Год  \x1b[0m\n";
-        std::cout << "\x1B[0;32;40m-------------------------------------------------------------------------------------------------------------------------- \x1b[0m\n";
-        for (size_t i = 0; i < films.size(); ++i) {
-            std::cout << "\x1B[0;32;40m" << i + 1 << "|\x1b[0m";
+        cout << "\x1B[0;32;40m  № | Name                     | Country             | Producer                    | Main actor                |Year  \x1b[0m\n";
+        cout << "\x1B[0;32;40m-------------------------------------------------------------------------------------------------------------------------- \x1b[0m\n";
+        for (size_t i = 0; i < size; ++i) {
+            cout << "\x1B[0;32;40m" << i + 1 << "|\x1b[0m";
             films[i].print();
         }
     }
 
     void searchFilmByActor() const {
         Film::clear();
-        std::cout << "\x1B[0;32mВведите имя актера: \x1b[0m";
-        std::string actor;
-        std::getline(std::cin, actor);
+        cout << "\x1B[0;32mEnter a name of actor: \x1b[0m";
+        string actor;
+        getline(cin, actor);
 
         Film::clear();
-        std::cout << "\x1B[0;32;40m  № | Название                     | Страна             | Режиссер                    | Главный актер                |Год  \x1b[0m\n";
-        std::cout << "\x1B[0;32;40m-------------------------------------------------------------------------------------------------------------------------- \x1b[0m\n";
+        cout << "\x1B[0;32;40m  № | Name                     | Country             | Producer                    | Main actor                |Year  \x1b[0m\n";
+        cout << "\x1B[0;32;40m-------------------------------------------------------------------------------------------------------------------------- \x1b[0m\n";
 
         bool found = false;
-        for (size_t i = 0; i < films.size(); ++i) {
-            if (films[i].actor == actor) {
-                std::cout << "\x1B[0;32;40m" << i + 1 << "|\x1b[0m";
+        for (size_t i = 0; i < size; ++i) {
+            if (films[i].getActor() == actor) {
+                cout << "\x1B[0;32;40m" << i + 1 << "|\x1b[0m";
                 films[i].print();
                 found = true;
             }
@@ -114,90 +213,289 @@ public:
 
         if (!found) {
             Film::clear();
-            std::cout << "\x1B[0;32mНе найдено фильмов с данным актером или его имя введено неверно.\x1b[0m\n";
+            cout << "\x1B[0;32mFilm with this name of actor don't exists.\x1b[0m\n";
         }
     }
 
     size_t getFilmCount() const {
-        return films.size();
+        return size;
     }
 
-    const std::vector<Film>& getFilms() const {
+    const Film* getFilms() const {
         return films;
+    }
+
+    size_t getSize() const {
+        return size;
+    }
+
+    void setFilms(const Film* newFilms, size_t newSize) {
+        delete[] films;
+        films = new Film[newSize * 2];
+        size = newSize;
+        capacity = newSize * 2;
+        for (size_t i = 0; i < size; ++i) {
+            films[i] = newFilms[i];
+        }
+    }
+
+    void combineFilms() {
+        if (size < 2) {
+            cout << "\x1B[0;32mNeed at least 2 films to combine\x1b[0m\n";
+            return;
+        }
+
+        cout << "Enter first film number: ";
+        int idx1;
+        cin >> idx1;
+        cout << "Enter second film number: ";
+        int idx2;
+        cin >> idx2;
+        cin.ignore();
+
+        if (idx1 <= 0 || idx2 <= 0 || idx1 > size || idx2 > size) {
+            cout << "\x1B[0;32mInvalid film numbers\x1b[0m\n";
+            return;
+        }
+
+        Film combined = films[idx1-1] + films[idx2-1];
+        if (size >= capacity) {
+            resize(capacity * 2);
+        }
+        films[size++] = combined;
+        cout << "\x1B[0;32mFilms combined successfully\x1b[0m\n";
+    }
+
+    void multiplyFilm() {
+        if (size < 1) {
+            cout << "\x1B[0;32mNo films to multiply\x1b[0m\n";
+            return;
+        }
+
+        cout << "Enter film number: ";
+        int idx;
+        cin >> idx;
+        cout << "Enter multiplication factor: ";
+        int factor;
+        cin >> factor;
+        cin.ignore();
+
+        if (idx <= 0 || idx > size || factor <= 0) {
+            cout << "\x1B[0;32mInvalid input\x1b[0m\n";
+            return;
+        }
+
+        Film multiplied = films[idx-1] * factor;
+        if (size >= capacity) {
+            resize(capacity * 2);
+        }
+        films[size++] = multiplied;
+        cout << "\x1B[0;32mFilm multiplied successfully\x1b[0m\n";
+    }
+
+    void incrementFilm() {
+        if (size < 1) {
+            cout << "\x1B[0;32mNo films to increment\x1b[0m\n";
+            return;
+        }
+
+        cout << "Enter film number: ";
+        int idx;
+        cin >> idx;
+        cin.ignore();
+
+        if (idx <= 0 || idx > size) {
+            cout << "\x1B[0;32mInvalid film number\x1b[0m\n";
+            return;
+        }
+
+        cout << "Choose increment type:\n";
+        cout << "1. Prefix (++film) - increase year\n";
+        cout << "2. Postfix (film++) - create sequel\n";
+        int choice;
+        cin >> choice;
+        cin.ignore();
+
+        if (choice == 1) {
+            ++films[idx-1];
+            cout << "\x1B[0;32mFilm year increased\x1b[0m\n";
+        } else if (choice == 2) {
+            if (size >= capacity) {
+                resize(capacity * 2);
+            }
+            films[size++] = films[idx-1]++;
+            cout << "\x1B[0;32mSequel created\x1b[0m\n";
+        } else {
+            cout << "\x1B[0;32mInvalid choice\x1b[0m\n";
+        }
+    }
+
+    void compareFilms() {
+        if (size < 2) {
+            cout << "\x1B[0;32mNeed at least 2 films to compare\x1b[0m\n";
+            return;
+        }
+
+        cout << "Enter first film number: ";
+        int idx1;
+        cin >> idx1;
+        cout << "Enter second film number: ";
+        int idx2;
+        cin >> idx2;
+        cin.ignore();
+
+        if (idx1 <= 0 || idx2 <= 0 || idx1 > size || idx2 > size) {
+            cout << "\x1B[0;32mInvalid film numbers\x1b[0m\n";
+            return;
+        }
+
+        if (films[idx1-1] == films[idx2-1]) {
+            cout << "\x1B[0;32mFilms are the same (same year and name)\x1b[0m\n";
+        } else {
+            cout << "\x1B[0;32mFilms are different\x1b[0m\n";
+        }
+    }
+
+    void createSpecialVersion() {
+        if (size < 1) {
+            cout << "\x1B[0;32mNo films to create version from\x1b[0m\n";
+            return;
+        }
+
+        cout << "Enter film number: ";
+        int idx;
+        cin >> idx;
+        cin.ignore();
+
+        if (idx <= 0 || idx > size) {
+            cout << "\x1B[0;32mInvalid film number\x1b[0m\n";
+            return;
+        }
+
+
+        if (size >= capacity) {
+            resize(capacity * 2);
+        }
+
+        cout << "Enter new director name: ";
+        string director;
+        getline(cin, director);
+        films[size++] = Film(films[idx-1], director);
+        cout << "\x1B[0;32mDirector's Cut created\x1b[0m\n";
     }
 };
 
 class FileManager {
+private:
+    string currentFilename;
+    bool isFileOpen;
+
+    void writeFilm(ofstream& file, const Film& film) {
+        file << film.getName() << "\n"
+             << film.getCountry() << "\n"
+             << film.getDirector() << "\n"
+             << film.getActor() << "\n"
+             << film.getYear() << "\n";
+    }
+
+    void readFilm(ifstream& file, Film& film) {
+        string name, country, director, actor;
+        int year;
+
+        getline(file, name);
+        getline(file, country);
+        getline(file, director);
+        getline(file, actor);
+        file >> year;
+        file.ignore();
+
+        film.setName(name);
+        film.setCountry(country);
+        film.setDirector(director);
+        film.setActor(actor);
+        film.setYear(year);
+    }
+
 public:
-    static void saveToFile(const FilmDatabase& database, const std::string& filename) {
-        std::ofstream file(filename);
+
+    FileManager() : currentFilename(""), isFileOpen(false) {}
+    FileManager(const string& filename) : currentFilename(filename), isFileOpen(false) {}
+    void setFilename(const string& filename) { currentFilename = filename; }
+
+    void saveToFile(const FilmDatabase& database) {
+        ofstream file(currentFilename);
 
         if (!file) {
-            std::cout << "\x1B[0;32mНе удалось открыть файл для записи\x1b[0m\n";
+            cout << "\x1B[0;32mFailed to open file for writing\x1b[0m\n";
+            isFileOpen = false;
             return;
         }
 
-        const auto& films = database.getFilms();
-        file << films.size() << std::endl;
-        for (const auto& film : films) {
-            file << film.name << "\n"
-                 << film.country << "\n"
-                 << film.director << "\n"
-                 << film.actor << "\n"
-                 << film.year << "\n";
+        isFileOpen = true;
+        size_t size = database.getSize();
+        const Film* films = database.getFilms();
+        file << size << endl;
+        for (size_t i = 0; i < size; ++i) {
+            writeFilm(file, films[i]);
         }
 
         file.close();
+        isFileOpen = false;
         Film::clear();
-        std::cout << "\x1B[0;32;40mДанные успешно сохранены\x1b[0m\n";
+        cout << "\x1B[0;32;40mData saved succesfully\x1b[0m\n";
     }
 
-    static void loadFromFile(FilmDatabase& database, const std::string& filename) {
-        std::ifstream file(filename);
+    void loadFromFile(FilmDatabase& database) {
+        ifstream file(currentFilename);
 
         if (!file) {
-            std::cout << "\x1B[0;32mНе удалось открыть файл для чтения\x1b[0m\n";
+            cout << "\x1B[0;32mFailed to open file for reading\x1b[0m\n";
+            isFileOpen = false;
             return;
         }
 
+        isFileOpen = true;
         size_t filmCount;
         file >> filmCount;
         file.ignore();
 
-        std::vector<Film> films;
+        Film* films = new Film[filmCount];
         for (size_t i = 0; i < filmCount; ++i) {
-            Film film;
-            std::getline(file, film.name);
-            std::getline(file, film.country);
-            std::getline(file, film.director);
-            std::getline(file, film.actor);
-            file >> film.year;
-            file.ignore(); 
-
-            films.push_back(film);
+            readFilm(file, films[i]);
         }
 
+        database.setFilms(films, filmCount);
+        delete[] films;
         file.close();
+        isFileOpen = false;
     }
+
+    bool isOpen() const { return isFileOpen; }
 };
 
 int main() {
-    FilmDatabase database;
 
-    FileManager::loadFromFile(database, "films.txt");
+    string filename;
+    FileManager fileManager;
+    FilmDatabase database;
 
     int choice;
     do {
-        std::cout << "\n1. Добавить фильм\n"
-                  << "2. Удалить фильм\n"
-                  << "3. Печать всех фильмов\n"
-                  << "4. Сохранить данные\n"
-                  << "5. Загрузить данные\n"
-                  << "6. Поиск по актеру\n"
-                  << "0. Выход\n";
-        std::cout << "Введите выбор: ";
-        std::cin >> choice;
-        std::cin.ignore(); 
+        cout << "\n1. Add film\n"
+                  << "2. Delete film\n"
+                  << "3. Print all films\n"
+                  << "4. Save\n"
+                  << "5. Load\n"
+                  << "6. Search\n"
+                  << "7. Combine films\n"
+                  << "8. Multiply film\n"
+                  << "9. Increment film\n"
+                  << "10. Compare films\n"
+                  << "11. Create Director's Cut\n"
+                  << "0. Exit\n";
+        cout << "Input: ";
+        cin >> choice;
+        cin.ignore();
 
         switch (choice) {
             case 1:
@@ -210,19 +508,40 @@ int main() {
                 database.printFilms();
                 break;
             case 4:
-                FileManager::saveToFile(database, "films.txt");
+                cout << "Input file name: ";
+                cin >> filename;
+                fileManager.setFilename(filename + ".txt");
+                fileManager.saveToFile(database);
                 break;
             case 5:
-                FileManager::loadFromFile(database, "films.txt");
+                cout << "Input file name: ";
+                cin >> filename;
+                fileManager.setFilename(filename + ".txt");
+                fileManager.loadFromFile(database);
                 break;
             case 6:
                 database.searchFilmByActor();
                 break;
+            case 7:
+                database.combineFilms();
+                break;
+            case 8:
+                database.multiplyFilm();
+                break;
+            case 9:
+                database.incrementFilm();
+                break;
+            case 10:
+                database.compareFilms();
+                break;
+            case 11:
+                database.createSpecialVersion();
+                break;
             case 0:
-                std::cout << "Выход из программы...\n";
+                cout << "Exit...\n";
                 break;
             default:
-                std::cout << "Неверный выбор. Попробуйте снова.\n";
+                cout << "Try again.\n";
         }
     } while (choice != 0);
 
