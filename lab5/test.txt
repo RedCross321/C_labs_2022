@@ -1,0 +1,39 @@
+6
+King-Kong
+USA
+kto-to
+2010
+Film
+Chelovek
+Matrix
+USA
+Spilberg
+2014
+Film
+Kiany
+The Bing-Bang theory
+USA
+Montana
+2014
+Series
+8 21 41
+the Breaking bad
+USA
+Mister White
+2012
+Series
+9 22 45
+V
+USA
+Krig
+2023
+MiniSeries
+20
+1
+Arcane
+France
+GG
+2024
+MiniSeries
+9
+0
