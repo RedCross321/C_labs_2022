@@ -3,6 +3,8 @@
         "cstdlib": "c",
         "ctype.h": "c",
         "unistd.h": "c",
-        "stdio_ext.h": "c"
+        "stdio_ext.h": "c",
+        "cmath": "c",
+        "math.h": "c"
     }
 }

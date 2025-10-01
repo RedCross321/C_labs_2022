@@ -1,34 +1,47 @@
+/*
+
+e^sin(x), 0 ≤ x ≤ 1/4
+e^x - 1/sqrt(x), 1/4 < x ≤ 1/2
+
+Контрольное значение: 0,23431
+
+gcc 4.c -o 4 -lm
+*/
+
 #include <stdio.h>
 #include <math.h>
+
 double integrate(int n)
 {
-    int i;
     const double h = 0.5/n;
-    const double h2 = 0.5*h;
     double k = 0.0;
-    for (i = 0; i < n; i++)
+    for (int i = 0; i < n; i++)
         {
-            double xi = i*h + h2;
-            if (i <= (n / 2))
+            double xi = i*h + 0.5*h;
+            if (xi <= 0.25)
                 k += exp(sin(xi));
             else
                 k += exp(xi) - 1/(sqrt(xi)); 
         }
     return k*h;
 }
+
 int main()
 {
     unsigned int n = 1000;
     double e;
-    printf ("Введите точность -> ");
+
+    printf ("Enter error -> ");
     scanf("%lf", &e);
+
     double integrate1 = integrate(n);
     double integrate2 = integrate(n*2);
-    while (fabs((integrate2 - integrate1)/3) >= e)  
+
+    while ((integrate1 - integrate2)/3 >= e)  
     {
         n *= 2;
         integrate1 = integrate2;
         integrate2 = integrate(n*2);
     }              
-    printf("Контрольное значение интеграла: 0,23431.\nИтоговое значение интеграла: %.5lf\n", integrate2);
+    printf("Control value: 0,23431.\nTotal value: %.5lf\n", integrate2);
 }

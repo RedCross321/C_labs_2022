@@ -1,13 +1,32 @@
-//наибольшее если оно больше суммы двух других
-//сумма минус наибольшее иначе
+/*
+Вывести значение наибольшего из трёх параметров x, y, z 
+если оно больше суммы двух других параметров, 
+и разность этой суммы и наибольшего значения иначе.
+
+gcc 1.c -o 1
+*/
+
+
 #include <stdio.h>
-#include <math.h>
+
+void check(float max, float sum)
+{
+  if (max > sum)
+  {
+    printf("%f\n",max);
+  }
+  else
+  {
+    printf("%f\n", sum - max);
+  }
+}
+
 int main()
 {
-    float x, y, z, sum;
 
+    float x, y, z;
 
-    printf("Enter x -> "); //ввод своих значений
+    printf("Enter x -> ");
     scanf("%f", &x);
     printf("Enter y -> ");
     scanf("%f", &y);
@@ -17,27 +36,15 @@ int main()
 
     if ((x > y) && (x > z))
     { 
-      if (x > (y + z))
-        printf("%f\n",x);
-      else 
-        sum = ((y + z) - x);
-        printf("%f\n", sum);
+      check(x, y + z);
     }
-    else if ((y > x) && (y > z))
+    else if (y > z)
     { 
-      if (y > (x + z))
-        printf("%f\n",y);
-      else 
-        sum = ((x + z) - y);
-        printf("%f\n", sum); 
+      check(y, x + z);
     }
     else
     { 
-      if (z > (y + x))
-        printf("%f\n",z);
-      else 
-        sum = ((y + x) - z);
-        printf("%f\n", sum);  
+      check(z, x + y);
     }
     return 0;
 }
